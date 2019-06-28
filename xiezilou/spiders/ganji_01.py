@@ -56,23 +56,27 @@ class Ganji01Spider(scrapy.Spider):
     def parse_district(self, response):
         city = response.meta['city']
         districts = response.xpath("//ul[@class='f-clear']/li")
-        for i in range(len(districts)):
-            if i == 0:
-                pass
-            else:
-                district_name = districts[i].xpath("./a/text()").extract_first().strip()
-                district_url = "http:" + districts[i].xpath("./a/@href").extract_first()
-                # print(district_url)
-                yield scrapy.Request(url=district_url, callback=self.parse_street, meta={'city': city, 'district': district_name})
+        housing_list = response.xpath("//div[@class='f-list-item ershoufang-list']")
+        if housing_list:
+            for i in range(len(districts)):
+                if i == 0:
+                    pass
+                else:
+                    district_name = districts[i].xpath("./a/text()").extract_first().strip()
+                    district_url = "http:" + districts[i].xpath("./a/@href").extract_first()
+                    # print(district_url)
+                    yield scrapy.Request(url=district_url, callback=self.parse_street, meta={'city': city, 'district': district_name})
 
     def parse_street(self, response):
         city = response.meta['city']
         district = response.meta['district']
         streets = response.xpath("//div[@class='fou-list f-clear']/a")
-        for street in streets:
-            street_name = street.xpath("./text()").extract_first().strip()
-            street_url = "http:" + street.xpath("./@href").extract_first()
-            yield scrapy.Request(url=street_url, callback=self.parse_type, meta={'city': city, 'district': district, 'street': street_name})
+        housing_list = response.xpath("//div[@class='f-list-item ershoufang-list']")
+        if housing_list:
+            for street in streets:
+                street_name = street.xpath("./text()").extract_first().strip()
+                street_url = "http:" + street.xpath("./@href").extract_first()
+                yield scrapy.Request(url=street_url, callback=self.parse_type, meta={'city': city, 'district': district, 'street': street_name})
 
     def parse_type(self, response):
         city = response.meta['city']

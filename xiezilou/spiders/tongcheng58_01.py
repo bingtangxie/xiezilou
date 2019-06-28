@@ -45,19 +45,19 @@ class Tongcheng58Spider(scrapy.Spider):
         city_codes.pop("海外")
         all_keys = list(city_codes.keys())
         all_keys_length = len(all_keys)
-        for i in range(0, int(all_keys_length * 0.25)):
-            province = all_keys[i]
-            for city in city_codes[province]:
-                code = city_codes[province][city].split("|")[0]
-                url = "https://{code}.58.com".format(code=code)
-                yield scrapy.Request(url=url, callback=self.entrance, meta={'province': province, 'city': city.strip()})
-
-        # for i in range(int(all_keys_length * 0.25), int(all_keys_length * 0.5)):
+        # for i in range(0, int(all_keys_length * 0.25)):
         #     province = all_keys[i]
         #     for city in city_codes[province]:
         #         code = city_codes[province][city].split("|")[0]
         #         url = "https://{code}.58.com".format(code=code)
         #         yield scrapy.Request(url=url, callback=self.entrance, meta={'province': province, 'city': city.strip()})
+
+        for i in range(int(all_keys_length * 0.25), int(all_keys_length * 0.5)):
+            province = all_keys[i]
+            for city in city_codes[province]:
+                code = city_codes[province][city].split("|")[0]
+                url = "https://{code}.58.com".format(code=code)
+                yield scrapy.Request(url=url, callback=self.entrance, meta={'province': province, 'city': city.strip()})
         #
         # for i in range(int(all_keys_length * 0.5), int(all_keys_length * 0.75)):
         #     province = all_keys[i]
@@ -93,26 +93,30 @@ class Tongcheng58Spider(scrapy.Spider):
     def parse_district(self, response):
         province = response.meta['province']
         city = response.meta['city']
-        distrcits = response.xpath("//div[@id='qySelectFirst']/a[@name='b_link']")
-        for district in distrcits:
-            district_name = district.xpath("./text()").extract_first()
-            district_url = district.xpath("./@href").extract_first()
-            yield scrapy.Request(url=district_url, callback=self.parse_street,
-                                 meta={'province': province, 'city': city, 'district': district_name,
-                                       })
+        housing_list = response.xpath("//ul[@class='house-list-wrap']/li")
+        if housing_list:
+            distrcits = response.xpath("//div[@id='qySelectFirst']/a[@name='b_link']")
+            for district in distrcits:
+                district_name = district.xpath("./text()").extract_first()
+                district_url = district.xpath("./@href").extract_first()
+                yield scrapy.Request(url=district_url, callback=self.parse_street,
+                                     meta={'province': province, 'city': city, 'district': district_name,
+                                           })
 
     def parse_street(self, response):
         province = response.meta['province']
         city = response.meta['city']
         district = response.meta['district']
-        streets = response.xpath("//div[@id='qySelectSecond']/a")
-        if streets:
-            for street in streets:
-                street_name = street.xpath("./text()").extract_first()
-                street_url = street.xpath("./@href").extract_first()
-                yield scrapy.Request(url=street_url, callback=self.parse_type,
-                                     meta={'province': province, 'city': city, 'district': district,
-                                           'street': street_name})
+        housing_list = response.xpath("//ul[@class='house-list-wrap']/li")
+        if housing_list:
+            streets = response.xpath("//div[@id='qySelectSecond']/a")
+            if streets:
+                for street in streets:
+                    street_name = street.xpath("./text()").extract_first()
+                    street_url = street.xpath("./@href").extract_first()
+                    yield scrapy.Request(url=street_url, callback=self.parse_type,
+                                         meta={'province': province, 'city': city, 'district': district,
+                                               'street': street_name})
 
     def parse_type(self, response):
         province = response.meta['province']
