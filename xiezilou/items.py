@@ -57,3 +57,8 @@ class XiezilouItem(scrapy.Item):
     agent_phone = scrapy.Field()
     agent_company = scrapy.Field()
     xzl_type = scrapy.Field()
+    phone = scrapy.Field()
+    bangong = scrapy.Field()
+    traffic = scrapy.Field()
+    place = scrapy.Field()
+    housing_detail_url = scrapy.Field()

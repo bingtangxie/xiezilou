@@ -122,6 +122,47 @@ class XiezilouPipeline(object):
                     data[fields[i]] = ""
             base_key = re.search("(.+)_\d+", spider.name).group(1)
             zs_key = base_key + "_xzl_zset"
-            # spider.db[base_key].insert(data)
-            # spider.redis.zadd(zs_key, {data['housing_url']: 3})
-            print(data)
+            spider.db[base_key].insert(data)
+            spider.redis.zadd(zs_key, {data['housing_url']: 3})
+
+        if spider.name == "fangtianxia_02":
+            data = dict(item)
+            data['created'] = datetime.now()
+            fields = [
+                "province",
+                "city",
+                "district",
+                "street",
+                "xzl_type",
+                "flag",
+                "housing_url",
+                "publish_time",
+                "housing_name",
+                "housing_price1",
+                "housing_price2",
+                "pay_method",
+                "business_circle",
+                "loupan",
+                "housing_floor",
+                "building_address",
+                "agent",
+                "agent_phone",
+                "agent_company",
+                "property_level",
+                "housing_decor",
+                "property_fee",
+                "bangong",
+                "zb_suite",
+                "traffic",
+                "place",
+                "housing_detail_url",
+                "phone",
+                "housing_area"
+            ]
+            for i in range(len(fields)):
+                if fields[i] not in data:
+                    data[fields[i]] = ""
+            base_key = re.search("(.+)_\d+", spider.name).group(1)
+            zs_key = base_key + "_xzl_zset"
+            spider.db[base_key].insert(data)
+            spider.redis.zadd(zs_key, {data['housing_url']: 3})

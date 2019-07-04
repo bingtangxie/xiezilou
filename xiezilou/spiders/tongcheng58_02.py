@@ -110,13 +110,19 @@ class Tongcheng5802Spider(scrapy.Spider):
             elif response.xpath("//span[@class=' house_basic_title_money_num_chuzu ']"):
                 items['housing_price2'] = response.xpath("//span[@class=' house_basic_title_money_num_chuzu ']/text()").extract_first() + response.xpath("//span[@class='house_basic_title_money_unit_chuzu']/text()").extract_first()
         housing_info1 = response.xpath("//div[@class='house-basic-item2']/p")
-        housing_info2 = response.xpath("//div[@class='house-basic-item3']/li")
+        housing_info2 = response.xpath("//ul[@class='house-basic-item3']/li")
         for item in housing_info2:
             item_name = item.xpath("./span[@class='c_999']/text()").extract_first().strip("：")
             if item_name == "楼盘":
                 items['loupan'] = item.xpath("./span[@class='c_000 mr_10']/span[@class='c_000']/text()").extract_first().strip()
             if item_name == "详细地址":
-                items['building_address'] = item.xpath("./span[@class='c_000 mr_10']").extract_first()
+                address = []
+                if item.xpath("./span[@class='c_000 mr_10']"):
+                    for sec in item.xpath("./span[@class='c_000 mr_10']/a"):
+                        address.append(sec.xpath("./text()").extract_first().strip())
+                    address.append(item.xpath("./span[@class='c_000 mr_10']/span/text()").extract_first().strip())
+                    if address:
+                        items['building_address'] = " ".join(address)
             # if item_name == "可注册公司":
             #     items[''] = item.xpath("./span[@class='c_000 fou']").extract_first().strip()
         if data['xzl_type'] == "纯写字楼":

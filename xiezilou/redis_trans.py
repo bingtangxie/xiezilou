@@ -35,7 +35,7 @@ rds = redis.StrictRedis(host='10.1.4.62', port=6379, db=2, password='jiaqiubo')
 
 # 190 11022 42815 24522
 
-res = rds.zrevrangebyscore("tongcheng58_xzl_zset", 3, 2)
+res = rds.zrevrangebyscore("fangtianxia_xzl_zset", 3, 2)
 print(res)
 for item in res:
-    rds.zadd("tongcheng58_xzl_zset", {item.decode(): 1})
+    rds.zadd("fangtianxia_xzl_zset", {item.decode(): 1})

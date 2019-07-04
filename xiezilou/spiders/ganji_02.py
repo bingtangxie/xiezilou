@@ -44,7 +44,7 @@ class Ganji02Spider(scrapy.Spider):
         while True:
             url = urls.pop().decode()
             if self.redis.zscore(zs_key, url) == 1:
-                # self.redis.zadd(zs_key, {url: 2})
+                self.redis.zadd(zs_key, {url: 2})
                 data = json.loads(self.redis.hget(h_key, url))
                 data['zs_key'] = zs_key
                 yield scrapy.Request(url=url, callback=self.parse_detail, meta=data)
@@ -84,14 +84,14 @@ class Ganji02Spider(scrapy.Spider):
         if response.xpath("//div[@class='user_other']"):
             items['agent_company'] = response.xpath("//div[@class='user_other']")[0].xpath("./span[@class='company']/text()").extract_first()
         suites = response.xpath("//ul[@class='collocation f-clear']/li[@class='item']")
-        peitao = []
+        peitao_raw = []
         if suites:
             for item in suites:
                 label = item.xpath("./p[@class='text']/text()").extract_first()
-                peitao.append(label)
+                peitao_raw.append(label)
                 if label == "中央空调":
                     items['central_air_condition'] = "有"
-        items['peitao'] = ",".join(peitao).split(",")
+        items['peitao'] = ",".join(peitao_raw)
         items['city'] = data['city']
         items['district'] = data['district']
         items['street'] = data['street']
@@ -99,7 +99,7 @@ class Ganji02Spider(scrapy.Spider):
         items['housing_url'] = data['housing_url']
         items['flag'] = data['flag']
         zs_key = data['zs_key']
-        if self.redis.zscore(zs_key, data['housing_url']) == 1:
+        if self.redis.zscore(zs_key, data['housing_url']) == 2:
             yield items
 
 
