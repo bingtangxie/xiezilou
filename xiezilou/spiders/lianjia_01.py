@@ -38,21 +38,21 @@ class Lianjia01Spider(scrapy.Spider):
             province = cities_list[i]['province']
             city = cities_list[i]['city']
             yield scrapy.Request(url=url, callback=self.parse_city, meta={"province": province, "city": city})
-        # for i in range(int(cities_list_length * 0.25), int(cities_list_length * 0.5)):
-        #     url = cities_list[i]['city_url']
-        #     province = cities_list[i]['province']
-        #     city = cities_list[i]['city']
-        #     yield scrapy.Request(url=url, callback=self.parse_city, meta={"province": province, "city": city})
-        # for i in range(int(cities_list_length * 0.5), int(cities_list_length * 0.75)):
-        #     url = cities_list[i]['city_url']
-        #     province = cities_list[i]['province']
-        #     city = cities_list[i]['city']
-        #     yield scrapy.Request(url=url, callback=self.parse_city, meta={"province": province, "city": city})
-        # for i in range(int(cities_list_length * 0.75), cities_list_length):
-        #     url = cities_list[i]['city_url']
-        #     province = cities_list[i]['province']
-        #     city = cities_list[i]['city']
-        #     yield scrapy.Request(url=url, callback=self.parse_city, meta={"province": province, "city": city})
+        for i in range(int(cities_list_length * 0.25), int(cities_list_length * 0.5)):
+            url = cities_list[i]['city_url']
+            province = cities_list[i]['province']
+            city = cities_list[i]['city']
+            yield scrapy.Request(url=url, callback=self.parse_city, meta={"province": province, "city": city})
+        for i in range(int(cities_list_length * 0.5), int(cities_list_length * 0.75)):
+            url = cities_list[i]['city_url']
+            province = cities_list[i]['province']
+            city = cities_list[i]['city']
+            yield scrapy.Request(url=url, callback=self.parse_city, meta={"province": province, "city": city})
+        for i in range(int(cities_list_length * 0.75), cities_list_length):
+            url = cities_list[i]['city_url']
+            province = cities_list[i]['province']
+            city = cities_list[i]['city']
+            yield scrapy.Request(url=url, callback=self.parse_city, meta={"province": province, "city": city})
 
     def parse_city(self, response):
         province = response.meta['province']
@@ -113,19 +113,22 @@ class Lianjia01Spider(scrapy.Spider):
         district = response.meta["district"]
         street = response.meta['street']
         flag = response.meta["flag"]
-        housing_list = response.xpath("//div[@class='result__ul']")
+        housing_list = response.xpath("//div[@class='result__ul']/a")
         if housing_list:
-            self.total += 1
-            print(self.total)
             for housing in housing_list:
-                housing_url = response.urljoin(housing.xpath("./a[@class='result__li']/@href").extract_first())
-                # data = {'province': province, 'city': city, 'district': district, 'street': street,
-                #         'referer': response.url, 'housing_url': housing_url, 'flag': flag}
-                # base_key = re.search("(.+)_\d+", Lianjia01Spider.name).group(1)
-                # hash_key = base_key + "_xzl_detail_url_hashtable"
-                # set_key = base_key + "_xzl_zset"
-                # self.redis.hset(hash_key, housing_url, json.dumps(data))
-                # self.redis.zadd(set_key, {housing_url: 1})
+                building_url = response.urljoin(housing.xpath("./@href").extract_first())
+                building_name = housing.xpath("./div[@class='result__li-right']/p[@class='result__li-title']/text()").extract_first().strip()
+                area_extent = housing.xpath("./div[@class='result__li-right']/p[@class='result__li-features']/text()").extract_first().strip()
+                building_description = housing.xpath("./div[@class='result__li-right']/p[@class='result__li-other']/text()").extract_first().strip()
+                price_extent = housing.xpath("./div[@class='result__li-right']/p[@class='result__li-price']/span/text()").extract_first().strip()
+                data = {'province': province, 'city': city, 'district': district, 'street': street,
+                        'referer': response.url, 'building_url': building_url, 'flag': flag, "building_name": building_name, "area_extent": area_extent, "building_description": building_description,
+                        "price_extent": price_extent}
+                base_key = re.search("(.+)_\d+", Lianjia01Spider.name).group(1)
+                hash_key = base_key + "_xzl_detail_url_hashtable"
+                set_key = base_key + "_xzl_zset"
+                self.redis.hset(hash_key, building_url, json.dumps(data))
+                self.redis.zadd(set_key, {building_url: 1})
             pagination = response.xpath("//a[@class='result__page-next js-page']")
             if pagination:
                 base_url = response.url

@@ -28,10 +28,16 @@ class Ganji01Spider(scrapy.Spider):
                 city_url = city.xpath("./@href").extract_first()
                 cities_list.append({'city': city_name, 'city_url': city_url})
         cities_list_length = len(cities_list)
-        for i in range(0, int(cities_list_length * 0.25)):
-            city = cities_list[i]['city']
+        for i in range(cities_list_length):
             url = cities_list[i]['city_url']
-            yield scrapy.Request(url=url, callback=self.parse_entrance, meta={'city': city})
+            city = cities_list[i]['city']
+            if city == "北京":
+                yield scrapy.Request(url=url, callback=self.parse_entrance,
+                                     meta={'city': city})
+        # for i in range(0, int(cities_list_length * 0.25)):
+        #     city = cities_list[i]['city']
+        #     url = cities_list[i]['city_url']
+        #     yield scrapy.Request(url=url, callback=self.parse_entrance, meta={'city': city})
         # for i in range(int(cities_list_length * 0.25), int(cities_list_length * 0.5)):
         #     city = cities_list[i]['city']
         #     url = cities_list[i]['city_url']
@@ -148,13 +154,11 @@ class Ganji01Spider(scrapy.Spider):
                 set_key = base_key + "_xzl_zset"
                 data = {'city': city, 'district': district, 'street': street,
                         'xzl_type': xzl_type, 'referer': response.url, 'housing_url': housing_url, 'flag': flag}
-                print(flag, data)
-                # self.redis.hset(hash_key, housing_url, json.dumps(data))
-                # self.redis.zadd(set_key, {housing_url: 1})
+                self.redis.hset(hash_key, housing_url, json.dumps(data))
+                self.redis.zadd(set_key, {housing_url: 1})
             pagination = response.xpath("//a[@class='next']")
             if pagination:
                 next_url = pagination.xpath("./@href").extract_first()
-                print(next_url)
                 yield scrapy.Request(url=next_url, callback=self.parse_list,
                                      meta={'city': city, 'district': district, 'street': street,
                                            'xzl_type': xzl_type, 'flag': flag})

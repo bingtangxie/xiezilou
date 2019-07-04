@@ -43,6 +43,14 @@ class Fangtianxia01Spider(scrapy.Spider):
                         province = city_name
                     entrance_list.append({"province": province, "city": city_name, "city_url": city_url})
         entrance_list_length = len(entrance_list)
+        for i in range(entrance_list_length):
+            url = entrance_list[i]['city_url']
+            province = entrance_list[i]['province']
+            city = entrance_list[i]['city']
+            if city == "北京":
+                yield scrapy.Request(url=url, callback=self.parse_city,
+                                     meta={'province': province, 'city': city})
+
         # for i in range(int(entrance_list_length * 0.25)):
         #     url = entrance_list[i]['city_url']
         #     province = entrance_list[i]['province']
@@ -50,12 +58,12 @@ class Fangtianxia01Spider(scrapy.Spider):
         #     yield scrapy.Request(url=url, callback=self.parse_city,
         #                          meta={'province': province, 'city': city})
 
-        for i in range(int(entrance_list_length * 0.25), int(entrance_list_length * 0.5)):
-            url = entrance_list[i]['city_url']
-            province = entrance_list[i]['province']
-            city = entrance_list[i]['city']
-            yield scrapy.Request(url=url, callback=self.parse_city,
-                                 meta={'province': province, 'city': city})
+        # for i in range(int(entrance_list_length * 0.25), int(entrance_list_length * 0.5)):
+        #     url = entrance_list[i]['city_url']
+        #     province = entrance_list[i]['province']
+        #     city = entrance_list[i]['city']
+        #     yield scrapy.Request(url=url, callback=self.parse_city,
+        #                          meta={'province': province, 'city': city})
 
         # for i in range(int(entrance_list_length * 0.5), int(entrance_list_length * 0.75)):
         #     url = entrance_list[i]['city_url']
@@ -176,9 +184,8 @@ class Fangtianxia01Spider(scrapy.Spider):
                     base_key = re.search("(.+)_\d+", Fangtianxia01Spider.name).group(1)
                     hash_key = base_key + "_xzl_detail_url_hashtable"
                     set_key = base_key + "_xzl_zset"
-                    print(data)
-                    # self.redis.hset(hash_key, housing_url, json.dumps(data))
-                    # self.redis.zadd(set_key, {housing_url: 1})
+                    self.redis.hset(hash_key, housing_url, json.dumps(data))
+                    self.redis.zadd(set_key, {housing_url: 1})
                 pagination = response.xpath("//a[@id='PageControl1_hlk_next']")
                 if pagination:
                     next_url = response.urljoin(pagination.xpath("./@href").extract_first())
