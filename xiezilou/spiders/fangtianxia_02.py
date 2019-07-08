@@ -44,10 +44,10 @@ class Fangtianxia02Spider(scrapy.Spider):
         while True:
             url = urls.pop().decode()
             if self.redis.zscore(zs_key, url) == 1:
-                self.redis.zadd(zs_key, {url: 2})
+                # self.redis.zadd(zs_key, {url: 2})
                 data = json.loads(self.redis.hget(h_key, url))
                 data['zs_key'] = zs_key
-                yield scrapy.Request(url=url, callback=self.parse_detail, meta=data)
+                yield scrapy.Request(url=url, callback=self.parse_detail, meta=data.copy())
             total = len(urls)
             if total == 0:
                 break
@@ -217,5 +217,5 @@ class Fangtianxia02Spider(scrapy.Spider):
             items["phone"] = data["phone"]
         if "housing_area" in data:
             items["housing_area"] = data["housing_area"]
-        if self.redis.zscore(zs_key, data['housing_url']) == 2:
-            yield items
+        if self.redis.zscore(zs_key, data['housing_url']) == 1:
+            print(items)

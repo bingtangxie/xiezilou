@@ -62,3 +62,17 @@ class XiezilouItem(scrapy.Item):
     traffic = scrapy.Field()
     place = scrapy.Field()
     housing_detail_url = scrapy.Field()
+    housing_type = scrapy.Field()
+
+    built_in = scrapy.Field()
+    layer_height = scrapy.Field()
+    property = scrapy.Field()
+    parking_place = scrapy.Field()
+    parking_fee = scrapy.Field()
+    air_condition = scrapy.Field()
+    air_condition_fee = scrapy.Field()
+    air_condition_time = scrapy.Field()
+    elevator = scrapy.Field()
+    network = scrapy.Field()
+    settled_enterprise = scrapy.Field()
+

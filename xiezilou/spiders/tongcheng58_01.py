@@ -76,7 +76,7 @@ class Tongcheng58Spider(scrapy.Spider):
         for indep_city in independent_city_codes:
             in_code = independent_city_codes[indep_city].split("|")[0]
             in_url = "https://{code}.58.com".format(code=in_code)
-            if in_code == "bj":
+            if in_code != "bj":
                 yield scrapy.Request(url=in_url, callback=self.entrance,
                                      meta={'province': indep_city.strip(), 'city': indep_city.strip()})
 

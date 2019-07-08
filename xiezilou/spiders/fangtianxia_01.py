@@ -43,27 +43,29 @@ class Fangtianxia01Spider(scrapy.Spider):
                         province = city_name
                     entrance_list.append({"province": province, "city": city_name, "city_url": city_url})
         entrance_list_length = len(entrance_list)
-        for i in range(entrance_list_length):
-            url = entrance_list[i]['city_url']
-            province = entrance_list[i]['province']
-            city = entrance_list[i]['city']
-            if city == "北京":
-                yield scrapy.Request(url=url, callback=self.parse_city,
-                                     meta={'province': province, 'city': city})
+        # for i in range(entrance_list_length):
+        #     url = entrance_list[i]['city_url']
+        #     province = entrance_list[i]['province']
+        #     city = entrance_list[i]['city']
+        #     if city == "北京":
+        #         yield scrapy.Request(url=url, callback=self.parse_city,
+        #                              meta={'province': province, 'city': city})
 
         # for i in range(int(entrance_list_length * 0.25)):
         #     url = entrance_list[i]['city_url']
         #     province = entrance_list[i]['province']
         #     city = entrance_list[i]['city']
-        #     yield scrapy.Request(url=url, callback=self.parse_city,
-        #                          meta={'province': province, 'city': city})
+        #     if city != "北京":
+        #         yield scrapy.Request(url=url, callback=self.parse_city,
+        #                              meta={'province': province, 'city': city})
 
         # for i in range(int(entrance_list_length * 0.25), int(entrance_list_length * 0.5)):
         #     url = entrance_list[i]['city_url']
         #     province = entrance_list[i]['province']
         #     city = entrance_list[i]['city']
-        #     yield scrapy.Request(url=url, callback=self.parse_city,
-        #                          meta={'province': province, 'city': city})
+        #     if city != "北京":
+        #         yield scrapy.Request(url=url, callback=self.parse_city,
+        #                              meta={'province': province, 'city': city})
 
         # for i in range(int(entrance_list_length * 0.5), int(entrance_list_length * 0.75)):
         #     url = entrance_list[i]['city_url']
@@ -72,12 +74,12 @@ class Fangtianxia01Spider(scrapy.Spider):
         #     yield scrapy.Request(url=url, callback=self.parse_city,
         #                          meta={'province': province, 'city': city})
 
-        # for i in range(int(entrance_list_length * 0.75), entrance_list_length):
-        #     url = entrance_list[i]['city_url']
-        #     province = entrance_list[i]['province']
-        #     city = entrance_list[i]['city']
-        #     yield scrapy.Request(url=url, callback=self.parse_city,
-        #                          meta={'province': province, 'city': city})
+        for i in range(int(entrance_list_length * 0.75), entrance_list_length):
+            url = entrance_list[i]['city_url']
+            province = entrance_list[i]['province']
+            city = entrance_list[i]['city']
+            yield scrapy.Request(url=url, callback=self.parse_city,
+                                 meta={'province': province, 'city': city})
 
     def parse_city(self, response):
         province = response.meta['province']

@@ -166,3 +166,79 @@ class XiezilouPipeline(object):
             zs_key = base_key + "_xzl_zset"
             spider.db[base_key].insert(data)
             spider.redis.zadd(zs_key, {data['housing_url']: 3})
+
+        if spider.name == "anjuke_02":
+            data = dict(item)
+            data['created'] = datetime.now()
+            fields = [
+                "province",
+                "city",
+                "district",
+                "street",
+                "flag",
+                "housing_url",
+                "publish_time",
+                "housing_name",
+                "housing_price1",
+                "housing_price2",
+                "pay_method",
+                "loupan",
+                "housing_floor",
+                "building_address",
+                "agent",
+                "agent_phone",
+                "agent_company",
+                "housing_decor",
+                "property_fee",
+                "traffic",
+                "housing_area",
+                "peitao",
+                "central_air_condition",
+                "corp_reged",
+                "housing_workplace",
+                "housing_use_rate",
+                "rent_lease",
+                "housing_type"
+            ]
+            for i in range(len(fields)):
+                if fields[i] not in data:
+                    data[fields[i]] = ""
+            base_key = re.search("(.+)_\d+", spider.name).group(1)
+            zs_key = base_key + "_xzl_zset"
+            spider.db[base_key].insert(data)
+            spider.redis.zadd(zs_key, {data['housing_url']: 3})
+
+        if spider.name == "diandianzu_02":
+            data = dict(item)
+            data['created'] = datetime.now()
+            fields = [
+                "province",
+                "city",
+                "district",
+                "street",
+                "housing_url",
+                "publish_time",
+                "housing_name",
+                "housing_price1",
+                "building_address",
+                "built_in",
+                "layer_height",
+                "building_height",
+                "property",
+                "property_fee",
+                "parking_place",
+                "parking_fee",
+                "air_condition",
+                "air_condition_fee",
+                "air_condition_time",
+                "elevator",
+                "network",
+                "settled_enterprise"
+            ]
+            for i in range(len(fields)):
+                if fields[i] not in data:
+                    data[fields[i]] = ""
+            base_key = re.search("(.+)_\d+", spider.name).group(1)
+            zs_key = base_key + "_xzl_zset"
+            spider.db[base_key].insert(data)
+            spider.redis.zadd(zs_key, {data['housing_url']: 3})
