@@ -45,12 +45,12 @@ class Tongcheng58Spider(scrapy.Spider):
         city_codes.pop("海外")
         all_keys = list(city_codes.keys())
         all_keys_length = len(all_keys)
-        # for i in range(0, int(all_keys_length * 0.25)):
-        #     province = all_keys[i]
-        #     for city in city_codes[province]:
-        #         code = city_codes[province][city].split("|")[0]
-        #         url = "https://{code}.58.com".format(code=code)
-        #         yield scrapy.Request(url=url, callback=self.entrance, meta={'province': province, 'city': city.strip()})
+        for i in range(0, int(all_keys_length * 0.25)):
+            province = all_keys[i]
+            for city in city_codes[province]:
+                code = city_codes[province][city].split("|")[0]
+                url = "https://{code}.58.com".format(code=code)
+                yield scrapy.Request(url=url, callback=self.entrance, meta={'province': province, 'city': city.strip()})
 
         # for i in range(int(all_keys_length * 0.25), int(all_keys_length * 0.5)):
         #     province = all_keys[i]
@@ -73,12 +73,12 @@ class Tongcheng58Spider(scrapy.Spider):
         #         url = "https://{code}.58.com".format(code=code)
         #         yield scrapy.Request(url=url, callback=self.entrance, meta={'province': province, 'city': city.strip()})
 
-        for indep_city in independent_city_codes:
-            in_code = independent_city_codes[indep_city].split("|")[0]
-            in_url = "https://{code}.58.com".format(code=in_code)
-            if in_code != "bj":
-                yield scrapy.Request(url=in_url, callback=self.entrance,
-                                     meta={'province': indep_city.strip(), 'city': indep_city.strip()})
+        # for indep_city in independent_city_codes:
+        #     in_code = independent_city_codes[indep_city].split("|")[0]
+        #     in_url = "https://{code}.58.com".format(code=in_code)
+        #     if in_code == "cq":
+        #         yield scrapy.Request(url=in_url, callback=self.entrance,
+        #                              meta={'province': indep_city.strip(), 'city': indep_city.strip()})
 
     def entrance(self, response):
         province = response.meta['province']
