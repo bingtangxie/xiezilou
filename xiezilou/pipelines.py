@@ -322,3 +322,39 @@ class XiezilouPipeline(object):
             s_key = spider.name + "_xzl_set"
             spider.db[spider.name].insert(data)
             spider.redis.sadd(s_key, data['housing_url'])
+
+        if spider.name == "kongjianjia":
+            data = dict(item)
+            data['created'] = datetime.now()
+            fields = [
+                "city",
+                "district",
+                "street",
+                "housing_name",
+                "housing_url",
+                "building_address",
+                "housing_price1",
+                "housing_price2",
+                "housing_source",
+                "housing_area",
+                "built_in",
+                "green_rate",
+                "building_area",
+                "building_arch",
+                "building_total",
+                "elevator_num",
+                "lift_num",
+                "layer_height",
+                "property_company",
+                "property_fee",
+                "parking_place",
+                "heat_supply",
+                "air_condition",
+                "power_voltage",
+            ]
+            for i in range(len(fields)):
+                if fields[i] not in data:
+                    data[fields[i]] = ""
+            s_key = spider.name + "_xzl_set"
+            spider.db[spider.name].insert(data)
+            spider.redis.sadd(s_key, data['housing_url'])

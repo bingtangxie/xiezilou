@@ -87,4 +87,12 @@ class XiezilouItem(scrapy.Item):
     subway_line = scrapy.Field()
     property_company = scrapy.Field()
     land_property = scrapy.Field()
-
+    property_type = scrapy.Field()
+    housing_source = scrapy.Field()
+    green_rate = scrapy.Field()
+    building_arch = scrapy.Field()
+    building_total = scrapy.Field()
+    elevator_num = scrapy.Field()
+    lift_num = scrapy.Field()
+    heat_supply = scrapy.Field()
+    power_voltage = scrapy.Field()

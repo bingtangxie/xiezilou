@@ -3,6 +3,7 @@ import scrapy
 import redis
 import re
 import json
+import pymongo
 from scrapy.conf import settings
 from xiezilou.items import XiezilouItem
 
@@ -20,6 +21,21 @@ class A5cbdSpider(scrapy.Spider):
         redis_password = settings['REDIS_PASS']
         self.redis = redis.StrictRedis(host=redis_host, port=redis_port, db=redis_db, password=redis_password)
         self.sum = 0
+
+    @classmethod
+    def from_crawler(cls, crawler, *args, **kwargs):
+        spider = cls(*args, **kwargs)
+        spider._set_crawler(crawler)
+        redis_host = spider.settings['REDIS_HOST']
+        redis_port = spider.settings['REDIS_PORT']
+        redis_db = spider.settings['REDIS_DB']
+        redis_password = spider.settings['REDIS_PASS']
+        mongo_host = spider.settings['MONGO_HOST']
+        mongo_port = spider.settings['MONGO_PORT']
+        mongo_db = spider.settings['MONGO_DB']
+        spider.redis = redis.StrictRedis(host=redis_host, port=redis_port, db=redis_db, password=redis_password)
+        spider.db = pymongo.MongoClient(host=mongo_host, port=mongo_port)[mongo_db]
+        return spider
 
     def start_requests(self):
         urls = {
@@ -134,7 +150,7 @@ class A5cbdSpider(scrapy.Spider):
         items["publish_time"] = data["publish_time"]
         items["xzl_type"] = data["xzl_type"]
         items["business_circle"] = data["business_circle"]
-        items["housing_address"] = data["housing_address"]
+        items["building_address"] = data["housing_address"]
         items["housing_url"] = data["housing_url"]
         items["city"] = data["city"]
         items["district"] = data["district"]
