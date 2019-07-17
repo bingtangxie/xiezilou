@@ -79,8 +79,13 @@ class Anjuke02Spider(scrapy.Spider):
                 if label_name == "押付":
                     items["pay_method"] = label_value
                 if label_name == "楼盘":
-                    label_value = item.xpath("./span[@class='desc']/a/text()").extract_first().strip()
-                    items["loupan"] = label_value
+                    label_value = item.xpath("./span[@class='desc']/a/text()").extract_first()
+                    if label_value:
+                        items["loupan"] = label_value.strip()
+                    else:
+                        label_value = item.xpath("./span[@class='desc']/text()").extract_first()
+                        if label_value:
+                            items["loupan"] = label_value.strip()
                 if label_name == "地址":
                     items["building_address"] = label_value
                 if label_name == "面积":
@@ -122,9 +127,10 @@ class Anjuke02Spider(scrapy.Spider):
             label_value = item.xpath("./span")[1].xpath("./text()").extract_first()
             trains.append(label_name + " " + label_value)
         for item in plane_info:
-            label_name = item.xpath("./span")[0].xpath("./text()").extract_first()
-            label_value = item.xpath("./span")[1].xpath("./text()").extract_first()
-            planes.append(label_name + " " + label_value)
+            if item.xpath("./span"):
+                label_name = item.xpath("./span")[0].xpath("./text()").extract_first()
+                label_value = item.xpath("./span")[1].xpath("./text()").extract_first()
+                planes.append(label_name + " " + label_value)
         items["traffic"] = ",".join(trains) + "； " + ",".join(planes)
         items["publish_time"] = response.xpath("//div[@class='hd-sub']/text()")[1].extract().strip()
         items["agent"] = response.xpath("//div[@class='bro-info clearfix']/h5[@class='name']/text()").extract_first().strip()

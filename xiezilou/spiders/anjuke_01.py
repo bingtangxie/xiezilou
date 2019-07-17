@@ -33,31 +33,33 @@ class Anjuke01Spider(scrapy.Spider):
                     city_url = city.xpath("./@href").extract_first()
                     entrance_list.append({"city_url": city_url, "city": city_name})
         entrance_list_length = len(entrance_list)
-        for i in range(entrance_list_length):
-            url = entrance_list[i]['city_url']
-            city = entrance_list[i]['city']
-            if city == "北京":
-                yield scrapy.Request(url=url, callback=self.parse_city, meta={"city": city})
-
+        # for i in range(entrance_list_length):
+        #     url = entrance_list[i]['city_url']
+        #     city = entrance_list[i]['city']
+        #     if city == "北京":
+        #         yield scrapy.Request(url=url, callback=self.parse_city, meta={"city": city})
+        #
         # for i in range(0, int(entrance_list_length * 0.25)):
         #     url = entrance_list[i]['city_url']
         #     city = entrance_list[i]['city']
-        #     yield scrapy.Request(url=url, callback=self.parse_city, meta={"city": city})
+        #     if city != "北京":
+        #         yield scrapy.Request(url=url, callback=self.parse_city, meta={"city": city})
 
         # for i in range(int(entrance_list_length * 0.25), int(entrance_list_length * 0.5)):
         #     url = entrance_list[i]['city_url']
         #     city = entrance_list[i]['city']
-        #     yield scrapy.Request(url=url, callback=self.parse_city, meta={"city": city})
+        #     if city != "北京":
+        #         yield scrapy.Request(url=url, callback=self.parse_city, meta={"city": city})
 
         # for i in range(int(entrance_list_length * 0.5), int(entrance_list_length * 0.75)):
         #     url = entrance_list[i]['city_url']
         #     city = entrance_list[i]['city']
         #     yield scrapy.Request(url=url, callback=self.parse_city, meta={"city": city})
 
-        # for i in range(int(entrance_list_length * 0.75), entrance_list_length):
-        #     url = entrance_list[i]['city_url']
-        #     city = entrance_list[i]['city']
-        #     yield scrapy.Request(url=url, callback=self.parse_city, meta={"city": city})
+        for i in range(int(entrance_list_length * 0.75), entrance_list_length):
+            url = entrance_list[i]['city_url']
+            city = entrance_list[i]['city']
+            yield scrapy.Request(url=url, callback=self.parse_city, meta={"city": city})
 
     def parse_city(self, response):
         data = response.meta.copy()

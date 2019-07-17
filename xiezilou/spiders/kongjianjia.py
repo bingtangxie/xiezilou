@@ -146,7 +146,6 @@ class KongjianjiaSpider(scrapy.Spider):
                 raw_data["housing_address"] = housing_address
                 raw_data["housing_name"] = housing_name
                 raw_data["housing_url"] = housing_url
-                # housing_url = data["base_url"] + "/{housing_id}".format(housing_id=housing_id)
                 yield scrapy.Request(url=housing_url, callback=self.parse_detail, meta=raw_data.copy())
             page_count = page["pageCount"]
             current_page = page["currentPage"]
@@ -168,7 +167,7 @@ class KongjianjiaSpider(scrapy.Spider):
                     'Content-Type': 'application/json'
                 }
                 yield scrapy.FormRequest(url=post_url, callback=self.parse_list, body=json.dumps(params), method="POST",
-                                         headers=headers, meta=data.copy())
+                                         headers=headers, meta=raw_data.copy())
         # housing_list = response.xpath("//div[@class='list_container']/ul/li")
         # if housing_list:
         #     for housing in housing_list:
@@ -232,5 +231,5 @@ class KongjianjiaSpider(scrapy.Spider):
         items["air_condition"] = air_condition
         items["power_voltage"] = power_voltage
         items["property_level"] = property_level
-        if not self.redis.sismember(KongjianjiaSpider.name + "xzl_set", data["housing_url"]):
+        if not self.redis.sismember(KongjianjiaSpider.name + "_xzl_set", data["housing_url"]):
             yield items

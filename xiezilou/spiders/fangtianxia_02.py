@@ -131,24 +131,86 @@ class Fangtianxia02Spider(scrapy.Spider):
         data["property_level"] = res["propertygrade"]
         data["housing_decor"] = res["fitment"]
         data["property_fee"] = res["wuyefei"] + "元/平米·月"
-        params = {
-            "customizedParam": {
-                "houseid": str(data["house_id"]),
-                "houseProperty": "office",
-                "houseType": data["house_type"],
-                "city": data["city"]
-            },
-            "isUpdateData": "0",
-            "ownerId": "shop",
-            "reportType": "office",
-            "moduleId": "205"
-        }
-        headers = {
-            'Content-Type': 'application/json'
-        }
-        yield scrapy.FormRequest(url="https://report.fang.com/proxy/report/1.0/module/templateModuleResult",
-                                 method="POST", body=json.dumps(params), headers=headers,
-                                 callback=self.parse_detail_info_205, meta=data.copy())
+        zs_key = data["zs_key"]
+        items = XiezilouItem()
+        if "housing_price2" in data:
+            items["province"] = data["province"]
+        if "city" in data:
+            items["city"] = data["city"]
+        if "district" in data:
+            items["district"] = data["district"]
+        if "street" in data:
+            items["street"] = data["street"]
+        if "xzl_type" in data:
+            items["xzl_type"] = data["xzl_type"]
+        if "flag" in data:
+            items["flag"] = data["flag"]
+        if "housing_url" in data:
+            items["housing_url"] = data["housing_url"]
+        if "publish_time" in data:
+            items["publish_time"] = data["publish_time"]
+        if "housing_name" in data:
+            items["housing_name"] = data["housing_name"]
+        if "housing_price1" in data:
+            items["housing_price1"] = data["housing_price1"]
+        if "housing_price2" in data:
+            items["housing_price2"] = data["housing_price2"]
+        if "pay_method" in data:
+            items["pay_method"] = data["pay_method"]
+        if "business_circle" in data:
+            items["business_circle"] = data["business_circle"]
+        if "loupan" in data:
+            items["loupan"] = data["loupan"]
+        if "housing_floor" in data:
+            items["housing_floor"] = data["housing_floor"]
+        if "building_address" in data:
+            items["building_address"] = data["building_address"]
+        if "agent" in data:
+            items["agent"] = data["agent"]
+        if "agent_phone" in data:
+            items["agent_phone"] = data["agent_phone"]
+        if "agent_company" in data:
+            items["agent_company"] = data["agent_company"]
+        if "property_level" in data:
+            items["property_level"] = data["property_level"]
+        if "housing_decor" in data:
+            items["housing_decor"] = data["housing_decor"]
+        if "property_fee" in data:
+            items["property_fee"] = data["property_fee"]
+        if "bangong" in data:
+            items["bangong"] = data["bangong"]
+        if "zb_suite" in data:
+            items["zb_suite"] = data["zb_suite"]
+        if "traffic" in data:
+            items["traffic"] = data["traffic"]
+        if "place" in data:
+            items["place"] = data["place"]
+        if "housing_detail_url" in data:
+            items["housing_detail_url"] = data["housing_detail_url"]
+        if "phone" in data:
+            items["phone"] = data["phone"]
+        if "housing_area" in data:
+            items["housing_area"] = data["housing_area"]
+        if self.redis.zscore(zs_key, data['housing_url']) == 1:
+            yield items
+        # params = {
+        #     "customizedParam": {
+        #         "houseid": str(data["house_id"]),
+        #         "houseProperty": "office",
+        #         "houseType": data["house_type"],
+        #         "city": data["city"]
+        #     },
+        #     "isUpdateData": "0",
+        #     "ownerId": "shop",
+        #     "reportType": "office",
+        #     "moduleId": "205"
+        # }
+        # headers = {
+        #     'Content-Type': 'application/json'
+        # }
+        # yield scrapy.FormRequest(url="https://report.fang.com/proxy/report/1.0/module/templateModuleResult",
+        #                          method="POST", body=json.dumps(params), headers=headers,
+        #                          callback=self.parse_detail_info_205, meta=data.copy())
 
     def parse_detail_info_205(self, response):
         data = response.meta.copy()

@@ -255,5 +255,5 @@ class O571Spider(scrapy.Spider):
         items["city"] = data["city"]
         items["district"] = data["district"]
         items["housing_url"] = data["housing_url"]
-        if not self.redis.sismember(O571Spider.name + "xzl_set", data["housing_url"]):
+        if not self.redis.sismember(O571Spider.name + "_xzl_set", data["housing_url"]):
             yield items
