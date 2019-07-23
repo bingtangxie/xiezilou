@@ -68,7 +68,7 @@ class Officese01Spider(scrapy.Spider):
         for uri in uris:
             url = "http://{uri}.officese.com/rent".format(uri=uri)
             city = uris[uri]
-            if city == "上海":
+            if city == "苏州":
                 yield scrapy.Request(url=url, callback=self.parse_district, meta={"city": city})
 
     def parse_district(self, response):

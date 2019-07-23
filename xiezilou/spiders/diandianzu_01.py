@@ -36,8 +36,7 @@ class Diandianzu01Spider(scrapy.Spider):
         for uri in uris:
             url = "https://{uri}.diandianzu.com/listing".format(uri=uri)
             city = uris[uri]
-            if city == "北京":
-                yield scrapy.Request(url=url, callback=self.parse, meta={"city": city})
+            yield scrapy.Request(url=url, callback=self.parse, meta={"city": city})
 
     def parse(self, response):
         data = response.meta.copy()
